@@ -1,0 +1,81 @@
+version: "3.8"
+
+services:
+  cassandra-first:
+    image: cassandra:5.0
+    container_name: cassandra-first
+    volumes:
+      - ./cassandra-1:/data/database
+    environment:
+      - MAX_HEAP_SIZE=1024M #максимальный размер Java кучи
+      - HEAP_NEWSIZE=128M # минимально выделяемый размер Java кучи
+      - CASSANDRA_SEEDS=cassandra-first,cassandra-second,cassandra-third # задание связи между узлами кластера
+      - CASSANDRA_CLUSTER_NAME=myCluster #имя кластера
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch # протокол общения между узлами gossip
+      - CASSANDRA_AUTO_BOOTSTRAP=true #автоматическое подключение узла к кластеру при его обнаружении
+    ports:
+      - "9042:9042"  # Порт для внешних подключений к Cassandra
+    networks:
+      - database-network
+    deploy:
+      resources:
+        limits: # лимит выделяемых ресурсов для узла кластера
+          memory: 1.5G
+          cpus: "1.0"
+        reservations: # количество ресурсов, которое минимум должно быть выделено узлу кластера
+          memory: 512M
+          cpus: "0.5"
+
+  cassandra-second:
+    image: cassandra:5.0
+    container_name: cassandra-second
+    volumes:
+      - ./cassandra-2:/data/database
+    environment:
+      - MAX_HEAP_SIZE=1024M #максимальный размер Java кучи
+      - HEAP_NEWSIZE=128M # минимально выделяемый размер Java кучи
+      - CASSANDRA_SEEDS=cassandra-first,cassandra-second,cassandra-third # задание связи между узлами кластера
+      - CASSANDRA_CLUSTER_NAME=myCluster #имя кластера
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch # протокол общения между узлами gossip
+      - CASSANDRA_AUTO_BOOTSTRAP=true #автоматическое подключение узла к кластеру при его обнаружении
+    ports:
+      - "9043:9042"  # Порт для внешних подключений к Cassandra
+    networks:
+      - database-network
+    deploy:
+      resources:
+        limits: # лимит выделяемых ресурсов для узла кластера
+          memory: 1.5G
+          cpus: "1.0"
+        reservations: # количество ресурсов, которое минимум должно быть выделено узлу кластера
+          memory: 512M
+          cpus: "0.5"
+
+  cassandra-third:
+    image: cassandra:5.0
+    container_name: cassandra-third
+    volumes:
+      - ./cassandra-3:/data/database
+    environment:
+      - MAX_HEAP_SIZE=1024M #максимальный размер Java кучи
+      - HEAP_NEWSIZE=128M # минимально выделяемый размер Java кучи
+      - CASSANDRA_SEEDS=cassandra-first,cassandra-second,cassandra-third # задание связи между узлами кластера
+      - CASSANDRA_CLUSTER_NAME=myCluster #имя кластера
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch # протокол общения между узлами gossip
+      - CASSANDRA_AUTO_BOOTSTRAP=true #автоматическое подключение узла к кластеру при его обнаружении
+    ports:
+      - "9044:9042"  # Порт для внешних подключений к Cassandra
+    networks:
+      - database-network
+    deploy:
+      resources:
+        limits: # лимит выделяемых ресурсов для узла кластера
+          memory: 1.5G
+          cpus: "1.0"
+        reservations: # количество ресурсов, которое минимум должно быть выделено узлу кластера
+          memory: 512M
+          cpus: "0.5"
+
+networks:
+  database-network:
+    driver: bridge
