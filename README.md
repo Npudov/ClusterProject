@@ -6,34 +6,56 @@ Big data project, deploy three clusters in docker
 Были выбраны следующие NoSQL базы - Mongo, Cassandra, Neo4j
 
 В Mongo хранилось меню ресторана, данные были следующими:
+
 •	_id – идентификатор (ключ)
+
 •	dish_name – наименование блюда
+
 •	price - цена
+
 •	category – категория (первое блюдо, второе блюдо, напитки, десерт)
 
 В Cassandra хранились данные о клиентах ресторана (программа лояльности) и данные о работниках ресторана. Пространство ключей у них одно – restaurants. Получилось две таблицы:
 Table Clients:
+
 •	client_id – идентификатор клиента
+
 •	client_lastname - фамилия клиента
+
 •	client_firstname – имя клиента
+
 •	phone - телефон
+
 •	balance – сумма на бонусном счёте
+
 •	status – статус в программе лояльности (бронзовый, серебряный, золотой)
+
 PRIMARY KEY ((client_id), client_lastname, client_firstname)
+
 Table Employers:
+
 •	employer_id – идентификатор работника
+
 •	employer_lastname – фамилия работника
+
 •	employer_firstname – имя работника
+
 •	position – позиция
+
 •	salary – зарплата
+
 PRIMARY KEY ((employer_id), employer_lastname, employer_firstname)
 
 В Neo4j хранилась информация о связях между клиентами, официантами и столами. Официанты обслуживали столы, клиенты резервировали столы.
 В базе содержалось три узла: Clients, Officiants, Tables
 У Clients свойства: id-ключ, client_name – фамилия + имя.
+
 У Officiants свойства: id-ключ, officiant_name- фамилия + имя.
+
 У Tables свойства:id-ключ, table_number – номер стола
+
 Связь между Clients и Tables – reserved (зарезирвировано)
+
 Связь между Officiants и Tables – serve (обслуживается)
 
 Все базы поднимались как кластер при помощи docker-compose. Для каждой из баз был написан свой docker-compose и осуществлено развёртывание в Docker.
