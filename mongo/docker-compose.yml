@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  mongo1:
+    image: mongo:6
+    container_name: mongo1
+    command: ["--replSet", "myReplicaSet", "--bind_ip_all", "--port", "49005"] #команда для инициирования replicaSet
+    volumes:
+      - ./data/mongo-1:/data/db,size=200m
+    ports:
+      - 49005:49005
+    healthcheck: # команда для инициирования членов replica set и запуска узла через mongosh
+      test: test $$(echo "rs.initiate({_id:'myReplicaSet',members:[{_id:0,host:\"mongo1:49005\"},{_id:1,host:\"mongo2:49006\"},{_id:2,host:\"mongo3:49007\"}]}).ok || rs.status().ok" | mongosh --port 49005 --quiet) -eq 1
+      interval: 10s
+      start_period: 30s
+    deploy:
+      resources:
+        limits: # лимит выделяемых ресурсов для узла кластера
+          memory: 512m
+          cpus: '1'
+        reservations: # количество ресурсов, которое минимум должно быть выделено узлу кластера
+          memory: 256m
+          cpus: '0.5'
+
+  mongo2:
+    image: mongo:6
+    container_name: mongo2
+    command: ["--replSet", "myReplicaSet", "--bind_ip_all", "--port", "49006"] #команда для инициирования replicaSet
+    volumes:
+      - ./data/mongo-2:/data/db,size=200m
+    ports:
+      - 49006:49006
+    deploy:
+      resources:
+        limits: # лимит выделяемых ресурсов для узла кластера
+          memory: 512m
+          cpus: '1'
+        reservations: # количество ресурсов, которое минимум должно быть выделено узлу кластера
+          memory: 256m
+          cpus: '0.5'
+
+  mongo3:
+    image: mongo:6
+    container_name: mongo3
+    command: ["--replSet", "myReplicaSet", "--bind_ip_all", "--port", "49007"] #команда для инициирования replicaSet
+    volumes:
+      - ./data/mongo-3:/data/db,size=200m
+    ports:
+      - 49007:49007
+    deploy:
+      resources:
+        limits: # лимит выделяемых ресурсов для узла кластера
+          memory: 512m
+          cpus: '1'
+        reservations: # количество ресурсов, которое минимум должно быть выделено узлу кластера
+          memory: 256m
+          cpus: '0.5'
